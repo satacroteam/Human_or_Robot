@@ -4,6 +4,7 @@ Extract features to build X
 import os
 import pickle
 import numpy as np
+import pandas as pd
 
 from load_data import Load
 
@@ -36,9 +37,10 @@ class Extract(object):
             with open('train_ids.pkl', 'wb') as train_ids_file:
                 pickle.dump(self.train_ids, train_ids_file)
         else:
-            print("Load IDs")
-            with open('train_ids.pkl', 'rb') as train_ids_file:
-                self.train_ids = pickle.load(train_ids_file)
+            print("IDs already created")
+            # print("Load IDs")
+            # with open('train_ids.pkl', 'rb') as train_ids_file:
+                # self.train_ids = pickle.load(train_ids_file)
 
         if not os.path.isfile('train.pkl'):
             print("Extract features")
@@ -72,9 +74,33 @@ class Extract(object):
             with open('train.pkl', 'wb') as train_file:
                 pickle.dump(self.train, train_file)
         else:
-            print("Load features")
+            print("Train already created")
+            # print("Load features")
+            # with open('train.pkl', 'rb') as train_file:
+                # self.train = pickle.load(train_file)
+
+        if not os.path.isfile('train_data_set.pkl'):
+            print("Building data set with the features")
+            column_names = [
+                'nb_unique_ip', 'low_freq_ip', 'high_freq_ip', 'std_freq_ip', 'arg_max_ip',  # 'IP',
+                'nb_unique_device', 'low_freq_device', 'high_freq_device', 'std_freq_device', 'arg_max_device',  # 'device',
+                'nb_unique_merchandise', 'low_freq_merchandise', 'high_freq_merchandise', 'std_freq_merchandise', 'arg_max_merchandise',  # merchandise ,
+                'nb_unique_country', 'low_freq_country', 'high_freq_country', 'std_freq_country', 'arg_max_country',  # 'country',
+                'nb_unique_url', 'low_freq_url', 'high_freq_url', 'std_freq_url', 'arg_max_url',  # 'url',
+                'nb_unique_auction', 'low_freq_auction', 'high_freq_auction', 'std_freq_auction', 'arg_max_auction',  # 'auction' ,
+                ]
+
+            with open('train_ids.pkl', 'rb') as train_ids_file:
+                self.train_ids = pickle.load(train_ids_file)
+
             with open('train.pkl', 'rb') as train_file:
                 self.train = pickle.load(train_file)
 
+            data_set = pd.DataFrame(self.train, index=self.train_ids, columns=column_names)
+            data_set.fillna(0.0, inplace=True)
 
+            with open('train_data_set.pkl', 'wb') as train_data_set_file:
+                pickle.dump(data_set, train_data_set_file)
+        else:
+            print("Train data set already created")
 
