@@ -10,6 +10,7 @@ class Load(object):
         self.bids = None
         self.train = None
         self.test = None
+        self.train_test_concat = None
 
         self.bids_path = r"C:\Users\Robinet Florian\Desktop\facebook_auction-master\bids.csv"
         self.train_path = r"C:\Users\Robinet Florian\Desktop\facebook_auction-master\train.csv"
@@ -22,3 +23,5 @@ class Load(object):
         self.bids.fillna('-', inplace=True)
         self.train = pd.read_csv(self.train_path, sep=",")
         self.test = pd.read_csv(self.test_path, sep=",")
+        self.test['outcome'] = -1.0
+        self.train_test_concat = pd.concat((self.train, self.test))
