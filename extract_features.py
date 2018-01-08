@@ -18,7 +18,7 @@ class Extract(object):
         self.train_ids = []
         self.train = []
         self.train_data_set = None
-        self.train_answer = []
+        self.train_answer = pd.DataFrame()
 
     @staticmethod
     def compute_stats_by_categories(series):
@@ -135,16 +135,20 @@ class Extract(object):
         #     print("Xy data set already created")
 
     def build_answer(self):
+        dict_ids_outcome = {}
         with open('train_ids.pkl', 'rb') as train_ids_file:
             self.train_ids = pickle.load(train_ids_file)
-        for final_bidder_id in self.train_ids:
             for train_bidder_id, outcome in zip(self.load_data.train['bidder_id'], self.load_data.train['outcome']):
-                if final_bidder_id == train_bidder_id:
-                    self.train_answer.append(outcome)
-                    break
+                print(train_bidder_id, outcome)
+                dict_ids_outcome[train_bidder_id] = outcome
+
+        self.train_answer = dict_ids_outcome
+        print(self.train_answer)
 
         with open('train_answer.pkl', 'wb') as train_answer_file:
             pickle.dump(self.train_answer, train_answer_file)
+
+
 
 
 Extract().build_answer()
