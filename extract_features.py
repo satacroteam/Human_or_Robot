@@ -3,10 +3,8 @@ Extract features to build X
 """
 import os
 import pickle
-import sklearn
 import numpy as np
 import pandas as pd
-from sklearn_pandas import DataFrameMapper
 
 from load_data import Load
 
@@ -108,47 +106,20 @@ class Extract(object):
         else:
             print("Train data set already created")
 
-        # if not os.path.isfile('Xy.pkl'):
-        #   #   with open('train_data_set.pkl', 'rb') as train_data_set_file:
-        #         self.train_data_set = pickle.load(train_data_set_file)
-
-        #     full_data_set = self.train_data_set.join(self.load_data.train_test_concat['outcome'])
-        #     types = full_data_set.dtypes
-
-        #     arg_mapper = []
-        #     for col, colType in types.iteritems():
-        #         if col == 'outcome':
-        #             continue
-        #         if colType.name == 'float64' or colType.name == 'int64':
-        #             arg_mapper.append(([col], sklearn.preprocessing.StandardScaler()))
-        #         else:
-        #             arg_mapper.append(([col], sklearn.preprocessing.LabelBinarizer()))
-        #     mapper = DataFrameMapper(arg_mapper)
-        #     print(mapper)
-        #     train_ids = full_data_set.index.tolist()
-        #     print(full_data_set)
-        #     train_data = mapper.fit_transform(full_data_set)
-        #     train_answer = full_data_set[['outcome']].as_matrix()
-
-        #     pickle.dump([train_ids, train_data, train_answer], open('Xy.pkl', 'wb'))
-        # else:
-        #     print("Xy data set already created")
-
     def build_answer(self):
-        dict_ids_outcome = {}
-        with open('train_ids.pkl', 'rb') as train_ids_file:
-            self.train_ids = pickle.load(train_ids_file)
-            for train_bidder_id, outcome in zip(self.load_data.train['bidder_id'], self.load_data.train['outcome']):
-                print(train_bidder_id, outcome)
-                dict_ids_outcome[train_bidder_id] = outcome
+        if not os.path.isfile('train_data_set.pkl'):
+            print("Building answers ids data")
+            dict_ids_outcome = {}
+            with open('train_ids.pkl', 'rb') as train_ids_file:
+                self.train_ids = pickle.load(train_ids_file)
+                for train_bidder_id, outcome in zip(self.load_data.train['bidder_id'], self.load_data.train['outcome']):
+                    print(train_bidder_id, outcome)
+                    dict_ids_outcome[train_bidder_id] = outcome
 
-        self.train_answer = dict_ids_outcome
-        print(self.train_answer)
+            self.train_answer = dict_ids_outcome
+            print(self.train_answer)
 
-        with open('train_answer.pkl', 'wb') as train_answer_file:
-            pickle.dump(self.train_answer, train_answer_file)
-
-
-
-
-Extract().build_answer()
+            with open('train_answer.pkl', 'wb') as train_answer_file:
+                pickle.dump(self.train_answer, train_answer_file)
+        else:
+            print("Train answer data set already created")
