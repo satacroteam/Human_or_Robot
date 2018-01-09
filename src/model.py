@@ -1,15 +1,14 @@
 import pickle
 import pandas as pd
 import xgboost as xgb
-
 import numpy as np
 
 
 class Model(object):
     def __init__(self):
-        self.train_data = self.load('train_data_set.pkl')
-        self.train_answer = self.load('train_answer.pkl')
-        self.test_data = [test_id for test_id in pd.read_csv("test.csv", sep=',')['bidder_id']]
+        self.train_data = self.load('pickle/train_data_set.pkl')
+        self.train_answer = self.load('pickle/train_answer.pkl')
+        self.test_data = [test_id for test_id in pd.read_csv("data/test.csv", sep=',')['bidder_id']]
         self.model = None
 
     @staticmethod
@@ -20,10 +19,9 @@ class Model(object):
 
     def return_statistical_data(self):
         return self.train_data[['nb_unique_ip', 'low_freq_ip', 'high_freq_ip', 'std_freq_ip',
-                         'nb_unique_device', 'low_freq_device', 'high_freq_device', 'std_freq_device',
-                         'nb_unique_url', 'low_freq_url', 'high_freq_url', 'std_freq_url',
-                         'nb_unique_auction', 'low_freq_auction', 'high_freq_auction', 'std_freq_auction']]
-
+                                'nb_unique_device', 'low_freq_device', 'high_freq_device', 'std_freq_device',
+                                'nb_unique_url', 'low_freq_url', 'high_freq_url', 'std_freq_url',
+                                'nb_unique_auction', 'low_freq_auction', 'high_freq_auction', 'std_freq_auction']]
 
     def train(self):
 
@@ -56,4 +54,4 @@ class Model(object):
         test_answer = pd.concat([pd.DataFrame(self.test_data), pd.DataFrame(y_pred)], ignore_index=True, axis=1)
         final_result = pd.DataFrame(test_answer)
         print(final_result)
-        final_result.to_csv('08_01_18.csv', index=False)
+        final_result.to_csv('result/result.csv', index=False)

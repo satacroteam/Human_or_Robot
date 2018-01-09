@@ -1,5 +1,5 @@
-from extract_features import Extract
-from model import Model
+from src.extract_features import Extract
+from src.model import Model
 
 extract = Extract()
 extract.extract()

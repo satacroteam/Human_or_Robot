@@ -12,9 +12,9 @@ class Load(object):
         self.test = None
         self.train_test_concat = None
 
-        self.bids_path = r"C:\Users\Robinet Florian\Desktop\facebook_auction-master\bids.csv"
-        self.train_path = r"C:\Users\Robinet Florian\Desktop\facebook_auction-master\train.csv"
-        self.test_path = r"C:\Users\Robinet Florian\Desktop\facebook_auction-master\test.csv"
+        self.bids_path = "data/bids.csv"
+        self.train_path = "data/train.csv"
+        self.test_path = "data/test.csv"
 
         self.load_initial_data()
 
