@@ -17,4 +17,5 @@ model | Public LB | Private LB | Date | Commit
 --- | --- | --- | --- | ---
 Bid number statistical analysis and Xgboost classifier | 0.89928 | 0.90050 | 9th January 2018 | 6f91faf0eab2ad50fc54c1dd31cdce467f5ecdaa
 Bid number and bid time statistical analysis and Xgboost classifier | 0.88477 | 0.91041 | 10th January 2018 | e4a71983938b7500ef65a1d404219d7d0fd36375
+Bid number and bid time statistical analysis and Xgboost classifier (optimization) | 0.88546 | 0.91498 | 10th January 2018 | 8f1ab154e3321f929225358a50a74f5e9b4c3940
 --- | --- | --- | --- | ---
