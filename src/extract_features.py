@@ -23,36 +23,36 @@ class Extract(object):
         n = float(series.shape[0])
         counts = series.value_counts()
 
-        nb_unique = counts.count()
-        high_freq = counts[0] / n
-        low_freq = counts[-1] / n
+        nb_unique = np.float(counts.count())
+        high_freq = np.float(counts[0] / n)
+        low_freq = np.float(counts[-1] / n)
         arg_max = counts.index[0]
-        std_freq = np.std(counts / n)
+        std_freq = np.float(np.std(counts / n))
 
         return nb_unique, low_freq, high_freq, std_freq, arg_max
 
     @staticmethod
     def compute_stats_for_time_series(series):
 
-        bid_nb = series.shape[0]
-        min_time = series.min()
-        max_time = series.max()
-        range_time = max_time - min_time
+        bid_nb = np.float(series.shape[0])
+        min_time = np.float(series.min())
+        max_time = np.float(series.max())
+        range_time = np.float(max_time - min_time)
 
         time_interval = series[1:].as_matrix() - series[:-1].as_matrix()
 
         if len(time_interval) < 1:
             time_interval = np.array([0])
 
-        min_time_interval = np.min(time_interval)
-        max_time_interval = np.max(time_interval)
+        min_time_interval = np.float(np.min(time_interval))
+        max_time_interval = np.float(np.max(time_interval))
 
-        mean_time_interval = np.mean(time_interval)
-        std_time_interval = np.std(time_interval)
+        mean_time_interval = np.float(np.mean(time_interval))
+        std_time_interval = np.float(np.std(time_interval))
 
-        time_interval_25 = np.percentile(time_interval, 25)
-        time_interval_50 = np.percentile(time_interval, 50)
-        time_interval_75 = np.percentile(time_interval, 75)
+        time_interval_25 = np.float(np.percentile(time_interval, 25))
+        time_interval_50 = np.float(np.percentile(time_interval, 50))
+        time_interval_75 = np.float(np.percentile(time_interval, 75))
 
         return bid_nb, min_time, max_time, range_time, min_time_interval, max_time_interval, mean_time_interval, \
                std_time_interval, time_interval_25, time_interval_50, time_interval_75
@@ -87,17 +87,17 @@ class Extract(object):
 
         auction_data = np.array(auction_data)
 
-        mean_of_auction_bid_nb = np.mean(auction_data[:, 0])
-        std_of_auction_bid_nb = np.std(auction_data[:, 0])
-        mean_of_auction_range_time = np.mean(auction_data[:, 1])
-        std_of_auction_range_time = np.std(auction_data[:, 1])
-        min_of_auction_min_time_interval = np.min(auction_data[:, 2])
-        mean_of_auction_min_time_interval = np.mean(auction_data[:, 2])
-        max_auction_max_time_interval = np.max(auction_data[:, 3])
-        mean_auction_max_time_interval = np.mean(auction_data[:, 3])
-        mean_auction_mean_time_interval = np.mean(auction_data[:, 4])
-        std_auction_mean_time_interval = np.std(auction_data[:, 4])
-        mean_auction_std_time_interval = np.mean(auction_data[:, 5])
+        mean_of_auction_bid_nb = np.float(np.mean(auction_data[:, 0]))
+        std_of_auction_bid_nb = np.float(np.std(auction_data[:, 0]))
+        mean_of_auction_range_time = np.float(np.mean(auction_data[:, 1]))
+        std_of_auction_range_time = np.float(np.std(auction_data[:, 1]))
+        min_of_auction_min_time_interval = np.float(np.min(auction_data[:, 2]))
+        mean_of_auction_min_time_interval = np.float(np.mean(auction_data[:, 2]))
+        max_auction_max_time_interval = np.float(np.max(auction_data[:, 3]))
+        mean_auction_max_time_interval = np.float(np.mean(auction_data[:, 3]))
+        mean_auction_mean_time_interval = np.float(np.mean(auction_data[:, 4]))
+        std_auction_mean_time_interval = np.float(np.std(auction_data[:, 4]))
+        mean_auction_std_time_interval = np.float(np.mean(auction_data[:, 5]))
 
         return bid_nb, min_time, max_time, range_time, min_time_interval, max_time_interval, mean_time_interval, \
                std_time_interval, time_interval_25, time_interval_50, time_interval_75, mean_of_auction_bid_nb, \
@@ -203,7 +203,7 @@ class Extract(object):
             print("Train data set already created")
 
     def build_answer(self):
-        if not os.path.isfile('pickle/train_data_set.pkl'):
+        if not os.path.isfile('pickle/train_answer.pkl'):
             print("Building answers ids data")
             dict_ids_outcome = {}
             with open('pickle/train_ids.pkl', 'rb') as train_ids_file:
