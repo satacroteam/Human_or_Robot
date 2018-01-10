@@ -15,5 +15,6 @@ The goal of this competition is to identify online auction bids that are placed 
 
 model | Public LB | Private LB | Date | Commit
 --- | --- | --- | --- | ---
-Classical statistical analysis and Xgboost classifier | 0.89928 | 0.90050 | 9th January 2018 | 6f91faf0eab2ad50fc54c1dd31cdce467f5ecdaa
+Bid number statistical analysis and Xgboost classifier | 0.89928 | 0.90050 | 9th January 2018 | 6f91faf0eab2ad50fc54c1dd31cdce467f5ecdaa
+Bid number and bid time statistical analysis and Xgboost classifier | 0.88477 | 0.91041 | 10th January 2018 | e4a71983938b7500ef65a1d404219d7d0fd36375
 --- | --- | --- | --- | ---
