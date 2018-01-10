@@ -31,6 +31,81 @@ class Extract(object):
 
         return nb_unique, low_freq, high_freq, std_freq, arg_max
 
+    @staticmethod
+    def compute_stats_for_time_series(series):
+
+        bid_nb = series.shape[0]
+        min_time = series.min()
+        max_time = series.max()
+        range_time = max_time - min_time
+
+        time_interval = series[1:].as_matrix() - series[:-1].as_matrix()
+
+        if len(time_interval) < 1:
+            time_interval = np.array([0])
+
+        min_time_interval = np.min(time_interval)
+        max_time_interval = np.max(time_interval)
+
+        mean_time_interval = np.mean(time_interval)
+        std_time_interval = np.std(time_interval)
+
+        time_interval_25 = np.percentile(time_interval, 25)
+        time_interval_50 = np.percentile(time_interval, 50)
+        time_interval_75 = np.percentile(time_interval, 75)
+
+        return bid_nb, min_time, max_time, range_time, min_time_interval, max_time_interval, mean_time_interval, \
+               std_time_interval, time_interval_25, time_interval_50, time_interval_75
+
+    # Compute stats about a numerical column of table, with stats on sub-groups of this column (auctions in our case).
+    def compute_stats_for_time_series_with_group_by(self, table, column, group_by):
+
+        # get series and groups
+        series = table[column]
+        groups = table.groupby(group_by)
+
+        # global stats
+        bid_nb, min_time, max_time, range_time, min_time_interval, max_time_interval, mean_time_interval, \
+        std_time_interval, time_interval_25, time_interval_50, time_interval_75 = self.compute_stats_for_time_series(
+            series)
+
+        # stats by group
+        auction_data = []
+        for _, group in groups:
+            auction_bid_nb, auction_min_time, auction_max_time, auction_range_time, auction_min_time_interval, \
+            auction_max_time_interval, auction_mean_time_interval, auction_std_time_interval, auction_time_interval_25, \
+            auction_time_interval_50, auction_time_interval_75 = self.compute_stats_for_time_series(group[column])
+
+            auction_data.append([
+                auction_bid_nb,
+                auction_range_time,
+                auction_min_time_interval,
+                auction_max_time_interval,
+                auction_mean_time_interval,
+                auction_std_time_interval]
+            )
+
+        auction_data = np.array(auction_data)
+
+        mean_of_auction_bid_nb = np.mean(auction_data[:, 0])
+        std_of_auction_bid_nb = np.std(auction_data[:, 0])
+        mean_of_auction_range_time = np.mean(auction_data[:, 1])
+        std_of_auction_range_time = np.std(auction_data[:, 1])
+        min_of_auction_min_time_interval = np.min(auction_data[:, 2])
+        mean_of_auction_min_time_interval = np.mean(auction_data[:, 2])
+        max_auction_max_time_interval = np.max(auction_data[:, 3])
+        mean_auction_max_time_interval = np.mean(auction_data[:, 3])
+        mean_auction_mean_time_interval = np.mean(auction_data[:, 4])
+        std_auction_mean_time_interval = np.std(auction_data[:, 4])
+        mean_auction_std_time_interval = np.mean(auction_data[:, 5])
+
+        return bid_nb, min_time, max_time, range_time, min_time_interval, max_time_interval, mean_time_interval, \
+               std_time_interval, time_interval_25, time_interval_50, time_interval_75, mean_of_auction_bid_nb, \
+               std_of_auction_bid_nb, mean_of_auction_range_time, std_of_auction_range_time, \
+               min_of_auction_min_time_interval, mean_of_auction_min_time_interval, max_auction_max_time_interval, \
+               mean_auction_max_time_interval, mean_auction_mean_time_interval, std_auction_mean_time_interval, \
+               mean_auction_std_time_interval
+
     def extract(self):
         if not os.path.isfile('pickle/train_ids.pkl'):
             print("Extract IDs")
@@ -42,7 +117,7 @@ class Extract(object):
             print("IDs already created")
             # print("Load IDs")
             # with open('pickle/train_ids.pkl', 'rb') as train_ids_file:
-                # self.train_ids = pickle.load(train_ids_file)
+            # self.train_ids = pickle.load(train_ids_file)
 
         if not os.path.isfile('pickle/train.pkl'):
             print("Extract features")
@@ -61,13 +136,27 @@ class Extract(object):
                 nb_unique_auction, low_freq_auction, high_freq_auction, std_freq_auction, arg_max_auction = \
                     self.compute_stats_by_categories(group.auction)
 
+                bid_nb, min_time, max_time, range_time, min_time_interval, max_time_interval, mean_time_interval, \
+                std_time_interval, time_interval_25, time_interval_50, time_interval_75, mean_of_auction_bid_nb, \
+                std_of_auction_bid_nb, mean_of_auction_range_time, std_of_auction_range_time, \
+                min_of_auction_min_time_interval, mean_of_auction_min_time_interval, max_auction_max_time_interval, \
+                mean_auction_max_time_interval, mean_auction_mean_time_interval, std_auction_mean_time_interval, \
+                mean_auction_std_time_interval = self.compute_stats_for_time_series_with_group_by(group, 'time', 'auction')
+
                 statistical_results = [
                     nb_unique_ip, low_freq_ip, high_freq_ip, std_freq_ip, arg_max_ip,
                     nb_unique_device, low_freq_device, high_freq_device, std_freq_device, arg_max_device,
-                    nb_unique_merchandise, low_freq_merchandise, high_freq_merchandise, std_freq_merchandise, arg_max_merchandise,
+                    nb_unique_merchandise, low_freq_merchandise, high_freq_merchandise, std_freq_merchandise,
+                    arg_max_merchandise,
                     nb_unique_country, low_freq_country, high_freq_country, std_freq_country, arg_max_country,
                     nb_unique_url, low_freq_url, high_freq_url, std_freq_url, arg_max_url,
-                    nb_unique_auction, low_freq_auction, high_freq_auction, std_freq_auction, arg_max_auction
+                    nb_unique_auction, low_freq_auction, high_freq_auction, std_freq_auction, arg_max_auction,
+                    bid_nb, min_time, max_time, range_time, min_time_interval, max_time_interval, mean_time_interval,
+                    std_time_interval, time_interval_25, time_interval_50, time_interval_75, mean_of_auction_bid_nb,
+                    std_of_auction_bid_nb, mean_of_auction_range_time, std_of_auction_range_time,
+                    min_of_auction_min_time_interval, mean_of_auction_min_time_interval, max_auction_max_time_interval,
+                    mean_auction_max_time_interval, mean_auction_mean_time_interval, std_auction_mean_time_interval,
+                    mean_auction_std_time_interval
 
                 ]
 
@@ -79,18 +168,25 @@ class Extract(object):
             print("Train already created")
             # print("Load features")
             # with open('pickle/train.pkl', 'rb') as train_file:
-                # self.train = pickle.load(train_file)
+            # self.train = pickle.load(train_file)
 
         if not os.path.isfile('pickle/train_data_set.pkl'):
             print("Building data set with the features")
             column_names = [
-                'nb_unique_ip', 'low_freq_ip', 'high_freq_ip', 'std_freq_ip', 'arg_max_ip',  # 'IP',
-                'nb_unique_device', 'low_freq_device', 'high_freq_device', 'std_freq_device', 'arg_max_device',  # 'device',
-                'nb_unique_merchandise', 'low_freq_merchandise', 'high_freq_merchandise', 'std_freq_merchandise', 'arg_max_merchandise',  # merchandise ,
-                'nb_unique_country', 'low_freq_country', 'high_freq_country', 'std_freq_country', 'arg_max_country',  # 'country',
-                'nb_unique_url', 'low_freq_url', 'high_freq_url', 'std_freq_url', 'arg_max_url',  # 'url',
-                'nb_unique_auction', 'low_freq_auction', 'high_freq_auction', 'std_freq_auction', 'arg_max_auction',  # 'auction' ,
-                ]
+                'nb_unique_ip', 'low_freq_ip', 'high_freq_ip', 'std_freq_ip', 'arg_max_ip',
+                'nb_unique_device', 'low_freq_device', 'high_freq_device', 'std_freq_device', 'arg_max_device',
+                'nb_unique_merchandise', 'low_freq_merchandise', 'high_freq_merchandise', 'std_freq_merchandise',
+                'arg_max_merchandise',
+                'nb_unique_country', 'low_freq_country', 'high_freq_country', 'std_freq_country', 'arg_max_country',
+                'nb_unique_url', 'low_freq_url', 'high_freq_url', 'std_freq_url', 'arg_max_url',
+                'nb_unique_auction', 'low_freq_auction', 'high_freq_auction', 'std_freq_auction', 'arg_max_auction',
+                "bid_nb", "min_time", "max_time", "range_time", "min_time_interval", "max_time_interval",
+                "mean_time_interval", "std_time_interval", "time_interval_25", "time_interval_50", "time_interval_75",
+                "mean_of_auction_bid_nb", "std_of_auction_bid_nb", "mean_of_auction_range_time",
+                "std_of_auction_range_time", "min_of_auction_min_time_interval", "mean_of_auction_min_time_interval",
+                "max_auction_max_time_interval", "mean_auction_max_time_interval", "mean_auction_mean_time_interval",
+                "std_auction_mean_time_interval", "mean_auction_std_time_interval"
+            ]
 
             with open('pickle/train_ids.pkl', 'rb') as train_ids_file:
                 self.train_ids = pickle.load(train_ids_file)
