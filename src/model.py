@@ -2,7 +2,7 @@ import pickle
 import pandas as pd
 import xgboost as xgb
 import numpy as np
-from sklearn.decomposition import PCA, TruncatedSVD
+from sklearn.decomposition import PCA
 from tpot import TPOTClassifier
 from sklearn.model_selection import train_test_split
 
@@ -15,7 +15,6 @@ class Model(object):
         self.model = None
         self.n_comp = 3
         self.pca = None
-
 
     @staticmethod
     def load(pickle_name):
@@ -41,20 +40,30 @@ class Model(object):
                             "mean_auction_std_time_interval"
                             ]]
 
+    def feature_engineering(self, data, answer=None):
+        if answer:
+            # PCA
+            self.pca = PCA(n_components=self.n_comp, random_state=420)
+            self.pca.fit(np.nan_to_num(data), answer)
+            pca_results_train = self.pca.transform(np.nan_to_num(data))
+            data = pd.DataFrame(data)
+
+            for i in range(1, self.n_comp + 1):
+                 data['pca_' + str(i)] = pca_results_train[:, i - 1]
+        else:
+            pca2_results_test = self.pca.transform(np.nan_to_num(data))
+            data = pd.DataFrame(data)
+            for i in range(1, self.n_comp + 1):
+                data['pca_' + str(i)] = pca2_results_test[:, i - 1]
+
+        return data
+
     def train(self):
 
         train = pd.DataFrame(data=self.return_statistical_data(), index=self.train_answer.keys()).values
         answer = [int(value) for value in self.train_answer.values()]
 
-        # PCA
-        self.pca = PCA(n_components=self.n_comp, random_state=420)
-        self.pca.fit(np.nan_to_num(train), answer)
-        pca2_results_train = self.pca.transform(np.nan_to_num(train))
-        print(np.array(pca2_results_train[:, 1 - 1]))
-        train = pd.DataFrame(train)
-
-        for i in range(1, self.n_comp + 1):
-             train['pca_' + str(i)] = pca2_results_train[:, i - 1]
+        train = self.feature_engineering(train, answer)
 
         d_matrix_train = xgb.DMatrix(train, answer)
 
@@ -77,14 +86,7 @@ class Model(object):
 
     def test(self):
         test = pd.DataFrame(data=self.return_statistical_data(), index=self.test_data).values
-
-        pca2_results_test = self.pca.transform(np.nan_to_num(test))
-
-        test = pd.DataFrame(test)
-
-        for i in range(1, self.n_comp + 1):
-            test['pca_' + str(i)] = pca2_results_test[:, i - 1]
-
+        test = self.feature_engineering(test)
         dtest = xgb.DMatrix(test)
         y_pred = self.model.predict(dtest)
         test_answer = pd.concat([pd.DataFrame(self.test_data), pd.DataFrame(y_pred)], ignore_index=True, axis=1)
