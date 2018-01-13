@@ -19,6 +19,9 @@ class Load(object):
         self.load_initial_data()
 
     def load_initial_data(self):
+        """
+        Load initial data for the model
+        """
         self.bids = pd.read_csv(self.bids_path, sep=",")
         self.bids.fillna('-', inplace=True)
         self.train = pd.read_csv(self.train_path, sep=",")
