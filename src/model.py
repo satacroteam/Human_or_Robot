@@ -55,8 +55,9 @@ class Model(object):
         """
         Train the model
         """
-        train = pd.DataFrame(data=self.train_data, index=self.train_answer.keys()).values
+        train = pd.DataFrame(data=self.train_data, index=self.train_answer.keys())
         answer = [int(value) for value in self.train_answer.values()]
+        train = self.feature_engineering(train, answer)
 
         print(len(train), len(answer))
 
@@ -65,7 +66,7 @@ class Model(object):
 
         xgb_params = {
             'n_trees': 10000,
-            'eta': 0.08,
+            'eta': 0.1,
             'max_depth': 6,
             'subsample': 0.90,
             'objective': 'binary:logistic',
@@ -84,7 +85,8 @@ class Model(object):
         Predict answer for test data
         :return: result.csv
         """
-        test = pd.DataFrame(data=self.train_data, index=self.test_data).values
+        test = pd.DataFrame(data=self.train_data, index=self.test_data)
+        test = self.feature_engineering(test)
 
         d_matrix_test = xgb.DMatrix(test)
         y_predicted = self.model.predict(d_matrix_test)
