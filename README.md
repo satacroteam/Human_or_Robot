@@ -1,4 +1,3 @@
-**
 # Human_or_Robot
 
 ![](https://niccollsanddimes.files.wordpress.com/2015/06/robot-woman-office.jpg)
@@ -26,7 +25,7 @@ Bid number, bid argmax, bid time statistical analysis (normalize continuous data
 
 **Final ranking :** 94/985 (private leaderboard)
 
-## To go further
+## To go further ...
 
 * Extract more statistical features
 * Ensemble methods
