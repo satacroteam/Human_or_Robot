@@ -74,10 +74,11 @@ class Model(object):
         This list has been build by analysis of xgb features importance
         """
         return data[
-            [8514, 3699, 8523, 4403, 'pca_1', 8504, 6964, 8506, 2, 8511, 0, 4405, 4406, 4302, 'pca_2', 8516, 3, 8512,
-             3698, 'pca_3', 8510, 8522, 2801, 4345, 6961, 3700, 8503, 8519, 4297, 8508, 8515, 4052, 8517, 4404, 6963,
-             8521, 8524, 4304, 3701, 4301, 8520, 4298, 8509, 8505, 8513, 4303, 7807, 4296, 4397, 4300, 7819, 8507, 4342,
-             1, 4090, 6644, 6962, 3964]
+            [8395, 1, 8404, 4358, 'pca_1', 8385, 6894, 2, 8387, 8393, 4360, 0, 3689, 'pca_2', 4251, 2797, 8392, 4025, 3690,
+             6891, 3, 8389, 8390, 8391, 4255, 8384, 3691, 8405, 6893, 8394, 8398, 8403, 4303, 4260, 4261, 8396, 8397,
+             3151, 8400, 'pca_3', 4361, 8386, 6892, 4258, 4331, 8401, 7698, 3688, 3974, 4254, 8402, 4259, 4359, 4257,
+             8388, 4300, 6571, 7710, 3938, 4352, 4060, 4253]
+
         ]
 
     def train(self):
@@ -104,6 +105,7 @@ class Model(object):
             'eta': 0.06,
             'max_depth': 5,
             'subsample': 0.89,
+            'colsample_bytree': 0.86,
             'objective': 'binary:logistic',
             'eval_metric': 'auc',
             'base_score': y_mean,  # base prediction = mean(target)
@@ -114,7 +116,6 @@ class Model(object):
         self.model = xgb.train(dict(xgb_params, silent=0), d_matrix_train, num_boost_round=num_boost_rounds)
 
         # print(self.model.get_fscore().items())
-
         # xgb.plot_importance(self.model)
         # pyplot.show()
 
