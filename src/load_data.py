@@ -23,8 +23,8 @@ class Load(object):
         Load initial data for the model
         """
         self.bids = pd.read_csv(self.bids_path, sep=",")
-        self.bids.fillna('-', inplace=True)
+        self.bids.fillna(0, inplace=True)
         self.train = pd.read_csv(self.train_path, sep=",")
         self.test = pd.read_csv(self.test_path, sep=",")
-        self.test['outcome'] = -1.0
+        # self.test['outcome'] = -1.0
         self.train_test_concat = pd.concat((self.train, self.test))

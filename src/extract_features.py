@@ -5,6 +5,8 @@ import os
 import pickle
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import StandardScaler, LabelBinarizer
+from sklearn_pandas import DataFrameMapper
 
 from src.load_data import Load
 
@@ -17,6 +19,7 @@ class Extract(object):
         self.train = []
         self.train_data_set = None
         self.train_answer = pd.DataFrame()
+        self.test_data = [test_id for test_id in pd.read_csv("data/test.csv", sep=',')['bidder_id']]
 
     @staticmethod
     def load(pickle_name):
@@ -30,6 +33,26 @@ class Extract(object):
             pickle.dump(object_to_dump, data_file)
 
     @staticmethod
+    def return_cleaned_data(data):
+        """
+        Normalise continuous data and binarize categorical data
+        :param data: Compute data
+        :type data: Pandas Dataframe
+        """
+        types = data.dtypes
+        mapper_arg = []
+        for col, colType in types.iteritems():
+            if colType.name == 'float64' or colType.name == 'int64':
+                mapper_arg.append(([col], StandardScaler()))
+            else:
+                mapper_arg.append(('{}'.format(col), LabelBinarizer()))
+        mapper = DataFrameMapper(mapper_arg)
+        print(mapper)
+        data = mapper.fit_transform(data)
+
+        return data
+
+    @staticmethod
     def compute_stats_by_categories(series):
         """
         Compute classic statistical analysis on series
@@ -40,8 +63,8 @@ class Extract(object):
 
         nb_unique = np.float(counts.count())
         high_freq = np.float(counts[0] / n)
-        low_freq = np.float(counts[-1] / n)
-        arg_max = counts.index[0]
+        low_freq = np.float(counts[::-1].tolist()[0] / n)
+        arg_max = str(counts.index[0])
         std_freq = np.float(np.std(counts / n))
 
         return nb_unique, low_freq, high_freq, std_freq, arg_max
@@ -213,6 +236,11 @@ class Extract(object):
             self.train = self.load('pickle/train.pkl')
 
             data_set = pd.DataFrame(self.train, index=self.train_ids, columns=column_names)
+            data_set.fillna(0.0, inplace=True)
+
+            data_set = self.return_cleaned_data(data_set)
+
+            data_set = pd.DataFrame(data_set, index=self.train_ids)
             data_set.fillna(0.0, inplace=True)
 
             self.dump('pickle/train_data_set.pkl', data_set)
