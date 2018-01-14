@@ -15,8 +15,9 @@ The goal of this competition is to identify online auction bids that are placed 
 
 model | Public LB | Private LB | Date | Commit
 --- | --- | --- | --- | ---
-Bid number statistical analysis and Xgboost classifier | 0.89928 | 0.90050 | 9th January 2018 | 6f91faf0eab2ad50fc54c1dd31cdce467f5ecdaa
-Bid number and bid time statistical analysis and Xgboost classifier | 0.88477 | 0.91041 | 10th January 2018 | e4a71983938b7500ef65a1d404219d7d0fd36375
-Bid number and bid time statistical analysis and Xgboost classifier (optimization) | 0.88546 | 0.91498 | 10th January 2018 | 8f1ab154e3321f929225358a50a74f5e9b4c3940
-Bid number, bid argmax and bid time statistical analysis (normalize continuous data) and Xgboost classifier  | 0.91249 | 0.92072 | 14th January 2018 | 618842a9a2721155bbc3290b35afb45a1b96fe7f
+Bid number statistical analysis ==> Xgboost classifier | 0.89928 | 0.90050 | 9th January 2018 | 6f91faf0eab2ad50fc54c1dd31cdce467f5ecdaa
+Bid number and bid time statistical analysis ==> Xgboost classifier | 0.88477 | 0.91041 | 10th January 2018 | e4a71983938b7500ef65a1d404219d7d0fd36375
+Bid number and bid time statistical analysis ==> Xgboost classifier (optimization) | 0.88546 | 0.91498 | 10th January 2018 | 8f1ab154e3321f929225358a50a74f5e9b4c3940
+Bid number, bid argmax and bid time statistical analysis (normalize continuous data) ==> Xgboost classifier  | 0.91249 | 0.92072 | 14th January 2018 | 618842a9a2721155bbc3290b35afb45a1b96fe7f
+Bid number, bid argmax, bid time statistical analysis (normalize continuous data) and PCA features ==> Xgboost classifier  | 0.91146 | 0.92437 | 14th January 2018 | 0de21b1e3e57bff618f98e71d14ca7bfdb48bfc6
 --- | --- | --- | --- | ---
