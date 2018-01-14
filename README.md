@@ -24,7 +24,7 @@ Bid number, bid argmax, bid time statistical analysis (normalize continuous data
 Bid number, bid argmax, bid time statistical analysis (normalize continuous data), PCA features, feature selection and polynomial features ==> Xgboost classifier  | 0.92988 | 0.90661 | 14th January 2018 | [Script 6](https://github.com/satacroteam/Human_or_Robot/tree/ee9032131d0ff8211274a21a80b633ff21b7ed03)
 --- | --- | --- | --- | ---
 
-**Final ranking : 94/985** (private leaderboard)
+**Final ranking :** 94/985 (private leaderboard)
 
 ## To go further
 
