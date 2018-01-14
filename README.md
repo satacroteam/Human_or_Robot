@@ -20,4 +20,5 @@ Bid number and bid time statistical analysis ==> Xgboost classifier | 0.88477 | 
 Bid number and bid time statistical analysis ==> Xgboost classifier (optimization) | 0.88546 | 0.91498 | 10th January 2018 | [Script 3](https://github.com/satacroteam/Human_or_Robot/tree/8f1ab154e3321f929225358a50a74f5e9b4c3940)
 Bid number, bid argmax and bid time statistical analysis (normalize continuous data) ==> Xgboost classifier  | 0.91249 | 0.92072 | 14th January 2018 | [Script 4](https://github.com/satacroteam/Human_or_Robot/tree/618842a9a2721155bbc3290b35afb45a1b96fe7f)
 Bid number, bid argmax, bid time statistical analysis (normalize continuous data) and PCA features ==> Xgboost classifier  | 0.91146 | 0.92437 | 14th January 2018 | [Script 5](https://github.com/satacroteam/Human_or_Robot/tree/0de21b1e3e57bff618f98e71d14ca7bfdb48bfc6)
+Bid number, bid argmax, bid time statistical analysis (normalize continuous data), PCA features, feature selection and polynomial features ==> Xgboost classifier  | 0.92811 |0.90362 | 14th January 2018 | [Script 6](https://github.com/satacroteam/Human_or_Robot/tree/211d2efee78070c1dfbc4a722115e20663be8bab)
 --- | --- | --- | --- | ---
