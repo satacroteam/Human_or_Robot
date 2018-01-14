@@ -105,7 +105,6 @@ class Model(object):
             'eta': 0.06,
             'max_depth': 5,
             'subsample': 0.89,
-            'colsample_bytree': 0.86,
             'objective': 'binary:logistic',
             'eval_metric': 'auc',
             'base_score': y_mean,  # base prediction = mean(target)
