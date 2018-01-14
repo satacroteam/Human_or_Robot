@@ -101,7 +101,7 @@ class Model(object):
 
         xgb_params = {
             'n_trees': 9000,
-            'eta': 0.05,
+            'eta': 0.06,
             'max_depth': 5,
             'subsample': 0.89,
             'objective': 'binary:logistic',
