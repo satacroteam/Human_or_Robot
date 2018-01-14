@@ -5,10 +5,11 @@ import pickle
 import pandas as pd
 import xgboost as xgb
 import numpy as np
-from matplotlib import pyplot
+# from matplotlib import pyplot
 
 from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import PolynomialFeatures
 from tpot import TPOTClassifier
 
 
@@ -18,7 +19,8 @@ class Model(object):
         self.train_answer = self.load('pickle/train_answer.pkl')
         self.test_data = [test_id for test_id in pd.read_csv("data/test.csv", sep=',')['bidder_id']]
         self.mapper = None
-        self.feature_selection_list = None
+        self.feature_engineering_column = None
+        self.poly = None
         self.model = None
         self.n_comp = 3
         self.pca = None
@@ -44,35 +46,38 @@ class Model(object):
             pca_results_train = self.pca.transform(np.nan_to_num(data))
 
             # tSVD
-            '''self.t_svd = KernelPCA(n_components=self.n_comp, random_state=420)
-            t_svd_results_train = self.t_svd.fit_transform((np.nan_to_num(data)))'''
+            # self.t_svd = KernelPCA(n_components=self.n_comp, random_state=420)
+            # t_svd_results_train = self.t_svd.fit_transform((np.nan_to_num(data)))
 
             data = pd.DataFrame(data)
 
             for i in range(1, self.n_comp + 1):
                 data['pca_' + str(i)] = pca_results_train[:, i - 1]
-                '''data['t_svd_' + str(i)] = t_svd_results_train[:, i - 1]'''
+                # data['t_svd_' + str(i)] = t_svd_results_train[:, i - 1]
         else:
 
             pca_results_test = self.pca.transform(np.nan_to_num(data))
 
-            ''' t_svd_results_test = self.t_svd.transform(np.nan_to_num(data))'''
+            # t_svd_results_test = self.t_svd.transform(np.nan_to_num(data))
 
             data = pd.DataFrame(data)
 
             for i in range(1, self.n_comp + 1):
                 data['pca_' + str(i)] = pca_results_test[:, i - 1]
-                '''data['t_svd_' + str(i)] = t_svd_results_test[:, i - 1]'''
+                # data['t_svd_' + str(i)] = t_svd_results_test[:, i - 1]
 
         return data
 
-    def feature_selection(self, data):
+    @staticmethod
+    def feature_selection(data):
+        """
+        This list has been build by analysis of xgb features importance
+        """
         return data[
-            [8514, 3699, 8523, 4403, 'pca_1', 8504, 6964, 8506, 2, 8511, 0, 4405, 4406, 4302, 'pca_2', 8516, 3, 8512, 3698,
-             'pca_3', 8510, 8522, 2801, 4345, 6961, 3700, 8503, 8519, 4297, 8508, 8515, 4052, 8517, 4404, 6963, 8521,
-             8524, 4304, 3701, 4301, 8520, 4298, 8509, 8505, 8513, 4303, 7807, 4296, 4397, 4300, 7819, 8507, 4342, 1,
-             4090, 6644, 6962, 3964]
-
+            [8514, 3699, 8523, 4403, 'pca_1', 8504, 6964, 8506, 2, 8511, 0, 4405, 4406, 4302, 'pca_2', 8516, 3, 8512,
+             3698, 'pca_3', 8510, 8522, 2801, 4345, 6961, 3700, 8503, 8519, 4297, 8508, 8515, 4052, 8517, 4404, 6963,
+             8521, 8524, 4304, 3701, 4301, 8520, 4298, 8509, 8505, 8513, 4303, 7807, 4296, 4397, 4300, 7819, 8507, 4342,
+             1, 4090, 6644, 6962, 3964]
         ]
 
     def train(self):
@@ -82,12 +87,12 @@ class Model(object):
         train = pd.DataFrame(data=self.train_data, index=self.train_answer.keys())
         answer = [int(value) for value in self.train_answer.values()]
         train = self.feature_engineering(train, answer)
-
-        self.feature_selection_list = train.columns.tolist()
-
-        train = pd.DataFrame(data=train, columns=self.feature_selection_list, index=self.train_answer.keys())
-
+        self.feature_engineering_column = train.columns.tolist()
+        train = pd.DataFrame(data=train, columns=self.feature_engineering_column, index=self.train_answer.keys())
         train = self.feature_selection(train)
+
+        self.poly = PolynomialFeatures(2)
+        train = self.poly.fit_transform(np.nan_to_num(train))
 
         print(len(train), len(answer))
 
@@ -97,7 +102,7 @@ class Model(object):
         xgb_params = {
             'n_trees': 9000,
             'eta': 0.1,
-            'max_depth': 6,
+            'max_depth': 5,
             'subsample': 0.89,
             'objective': 'binary:logistic',
             'eval_metric': 'auc',
@@ -108,10 +113,10 @@ class Model(object):
         d_matrix_train = xgb.DMatrix(train, answer)
         self.model = xgb.train(dict(xgb_params, silent=0), d_matrix_train, num_boost_round=num_boost_rounds)
 
-        print(self.model.get_fscore().items())
+        # print(self.model.get_fscore().items())
 
-        xgb.plot_importance(self.model)
-        pyplot.show()
+        # xgb.plot_importance(self.model)
+        # pyplot.show()
 
     def test(self):
         """
@@ -120,11 +125,9 @@ class Model(object):
         """
         test = pd.DataFrame(data=self.train_data, index=self.test_data)
         test = self.feature_engineering(test)
-
-        test = pd.DataFrame(data=test, columns=self.feature_selection_list, index=self.test_data)
-
+        test = pd.DataFrame(data=test, columns=self.feature_engineering_column, index=self.test_data)
         test = self.feature_selection(test)
-
+        test = self.poly.transform(np.nan_to_num(test))
         d_matrix_test = xgb.DMatrix(test)
         y_predicted = self.model.predict(d_matrix_test)
 
@@ -147,7 +150,6 @@ class Model(object):
                                                     test_size=0.25
         )
 
-        tpot = TPOTClassifier(generations=5, population_size=50, verbosity=2)
-        tpot.fit(x_train, y_train)
-        tpot.export('tpot_model/tpot_pipeline.py')
-
+        t_pot = TPOTClassifier(generations=5, population_size=50, verbosity=2)
+        t_pot.fit(x_train, y_train)
+        t_pot.export('tpot_model/tpot_pipeline.py')
